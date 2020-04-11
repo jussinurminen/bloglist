@@ -1,0 +1,9 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+    "title": "This blog includes TOP 10 MongoDB trics",
+    "author": "Pasi Peltonen",
+    "url": "https://foo/bar",
+    "likes": 589
+}
