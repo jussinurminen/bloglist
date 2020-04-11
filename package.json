@@ -6,6 +6,11 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
+    "build:ui": "rm -rf build && cd ../frontend && npm update && npm run build --prod && cp -r build ../backend/",
+    "deploy": "git push heroku master",
+    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git remote add -m update https://git.heroku.com/agile-brook-11582.git && git push && npm run deploy",
+    "deploy:fullorg": "npm run build:ui && git add . && git commit -m uibuild && git remote add -m heroku && git push && npm run deploy",
+    "logs:prod": "heroku logs --tail",
     "lint": "eslint .",
     "test": "jest --verbose"
   },
