@@ -55,6 +55,47 @@ describe('API tests', () => {
     )
   })
 
+  test('a valid blog can be added ', async () => {
+    const newBlog = {
+      title: 'TDD harms architecture',
+      author: 'Robert C. Martin',
+      url: 'http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html', 
+      likes: 0, 
+    }
+  
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+  
+    const response = await api.get('/api/blogs')
+  
+    const title = response.body.map(r => r.title)
+  
+    expect(response.body).toHaveLength(initialBlogs.length + 1)
+    expect(title).toContain(
+      'TDD harms architecture'
+    )
+  })
+
+  test('blog without title is not added', async () => {
+    const newBlog = {
+      author: 'Robert C. Martin',
+      url: 'http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html', 
+      likes: 0, 
+    }
+  
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400)
+  
+    const response = await api.get('/api/blogs')
+  
+    expect(response.body).toHaveLength(initialBlogs.length)
+  })
+
   afterAll(() => {
     mongoose.connection.close()
   })
