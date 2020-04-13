@@ -1,5 +1,6 @@
-const mongoose = require('mongoose')
 const supertest = require('supertest')
+const mongoose = require('mongoose')
+const helper = require('./test_helper')
 const app = require('../app')
 const api = supertest(app)
 
@@ -7,28 +8,13 @@ const Blog = require('../models/blog')
 
 describe('API tests', () => {
 
-  const initialBlogs = [
-    {
-      title: 'Go To Statement Considered Harmful',
-      author: 'Edsger W. Dijkstra',
-      url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
-      likes: 5,
-    },
-    { 
-      title: 'Canonical string reduction', 
-      author: 'Edsger W. Dijkstra', 
-      url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html', 
-      likes: 12,  
-    }   
-  ]
-
   beforeEach(async () => {
     await Blog.deleteMany({})
 
-    let blogObject = new Blog(initialBlogs[0])
+    let blogObject = new Blog(helper.initialBlogs[0])
     await blogObject.save()
 
-    blogObject = new Blog(initialBlogs[1])
+    blogObject = new Blog(helper.initialBlogs[1])
     await blogObject.save()
   })
 
@@ -42,7 +28,8 @@ describe('API tests', () => {
   test('all blogs are returned', async () => {
     const response = await api.get('/api/blogs')
   
-    expect(response.body.length).toBe(initialBlogs.length)
+    //expect(response.body.length).toBe(helper.initialBlogs.length)
+    expect(response.body).toHaveLength(helper.initialBlogs.length)
   })
   
   test('a specific blog is within the returned blogs', async () => {
@@ -69,11 +56,10 @@ describe('API tests', () => {
       .expect(200)
       .expect('Content-Type', /application\/json/)
   
-    const response = await api.get('/api/blogs')
-  
-    const title = response.body.map(r => r.title)
-  
-    expect(response.body).toHaveLength(initialBlogs.length + 1)
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
+
+    const title = blogsAtEnd.map(n => n.title)
     expect(title).toContain(
       'TDD harms architecture'
     )
@@ -91,9 +77,9 @@ describe('API tests', () => {
       .send(newBlog)
       .expect(400)
   
-    const response = await api.get('/api/blogs')
+    const blogsAtEnd = await helper.blogsInDb()
   
-    expect(response.body).toHaveLength(initialBlogs.length)
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
   })
 
   afterAll(() => {
