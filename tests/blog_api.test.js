@@ -10,12 +10,13 @@ describe('API tests', () => {
 
   beforeEach(async () => {
     await Blog.deleteMany({})
+    console.log('cleared')
 
-    let blogObject = new Blog(helper.initialBlogs[0])
-    await blogObject.save()
-
-    blogObject = new Blog(helper.initialBlogs[1])
-    await blogObject.save()
+    const blogObjects = helper.initialBlogs
+      .map(blog => new Blog(blog))
+    const promiseArray = blogObjects.map(blog => blog.save())
+    await Promise.all(promiseArray)
+    console.log('done')
   })
 
   test('blogs are returned as json', async () => {
