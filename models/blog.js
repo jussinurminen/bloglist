@@ -13,12 +13,12 @@ const blogSchema = new mongoose.Schema({
   author: {
     type: String,
     minlength: 5,
-    required: true
+    required: false
   },
   url: {
     type: String,
     minlength: 5,
-    required: true
+    required: false
   },
   likes: {
     type: Number
